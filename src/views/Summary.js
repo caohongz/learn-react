@@ -3,12 +3,20 @@ import React, { Component } from 'react';
 import store from '../Store.js';
 
 class Summary extends Component {
+  render() {
+    const {sum} = this.props;
+    return (
+      <div>Total Count: {sum}</div>
+    );
+  }
+}
+
+class SummaryContainer extends Component {
 
   constructor(props) {
     super(props);
 
     this.onChange = this.onChange.bind(this);
-    this.getOwnState = this.getOwnState.bind(this);
 
     this.state = this.getOwnState();
   }
@@ -20,6 +28,10 @@ class Summary extends Component {
 
   componentWillUnmount() {
     store.unsubscribe(this.onChange);
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextState.sum !== this.state.sum;
   }
 
   onChange() {
@@ -37,11 +49,9 @@ class Summary extends Component {
   }
 
   render() {
-    const sum = this.state.sum;
-    return (
-      <div>Total Count: {sum}</div>
+    return ( <Summary sum={this.state.sum} />
     );
   }
 }
 
-export default Summary;
+export default SummaryContainer;
