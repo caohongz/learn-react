@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+
+import * as Actions from '../Actions.js';
+import CounterStore from '../stores/CounterStore.js';
 import PropTypes from 'prop-types';
 
 const buttonStyle = {
@@ -10,12 +13,12 @@ class Counter extends Component {
   constructor(props) {
     console.log('enter constructor: ' + props.caption);
     super(props);
-
+    this.onChange = this.onChange.bind(this);
     this.onClickIncrementButton = this.onClickIncrementButton.bind(this);
     this.onClickDecrementButton = this.onClickDecrementButton.bind(this);
 
     this.state = {
-      count: props.initValue
+      count: CounterStore.getCounterValues()[props.caption]
     }
   }
 
@@ -37,15 +40,24 @@ class Counter extends Component {
   }
 
   componentDidMount() {
-    console.log('enter componentDidMount ' + this.props.caption);
+    CounterStore.addChangeListener(this.onChange);
+  }
+
+  componentWillUnmount() {
+    CounterStore.removeChangeListener(this.onChange)
   }
 
   onClickIncrementButton() {
-    this.setState({count: this.state.count + 1});
+    Actions.increment(this.props.caption);
   }
 
   onClickDecrementButton() {
-    this.setState({count: this.state.count - 1});
+    Actions.decrement(this.props.caption);
+  }
+
+  onChange() {
+    const newCount = CounterStore.getCounterValues()[this.props.caption];
+    this.setState({count: newCount});
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -67,12 +79,8 @@ class Counter extends Component {
 }
 
 Counter.propTypes = {
-  caption: PropTypes.string.isRequired,
-  initValue: PropTypes.number
+  caption: PropTypes.string.isRequired
 };
 
-Counter.defaultProps = {
-  initValue: 0
-};
 
 export default Counter;

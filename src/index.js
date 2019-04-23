@@ -2,11 +2,11 @@
  * @Author: Cao.Hongzhi 
  * @Date: 2019-04-22 16:15:26 
  * @Last Modified by: Cao.Hongzhi
- * @Last Modified time: 2019-04-22 16:46:34
+ * @Last Modified time: 2019-04-22 20:58:34
  */
 import React from 'react';
 import ReactDOM from 'react-dom';
-import ControlPanel from './ControlPanel';
+import ControlPanel from './views/ControlPanel';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
