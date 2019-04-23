@@ -1,36 +1,45 @@
 import React, { Component } from 'react';
 
-import SummaryStore from '../stores/SummaryStore.js';
+import store from '../Store.js';
 
 class Summary extends Component {
 
   constructor(props) {
     super(props);
 
-    this.onUpdate = this.onUpdate.bind(this);
+    this.onChange = this.onChange.bind(this);
+    this.getOwnState = this.getOwnState.bind(this);
 
-    this.state = {
-      sum: SummaryStore.getSummary()
-    }
+    this.state = this.getOwnState();
   }
+  
 
   componentDidMount() {
-    SummaryStore.addChangeListener(this.onUpdate);
-  }
+    store.subscribe(this.onChange);
+  };
 
   componentWillUnmount() {
-    SummaryStore.removeChangeListener(this.onUpdate);
+    store.unsubscribe(this.onChange);
   }
 
-  onUpdate() {
-    this.setState({
-      sum: SummaryStore.getSummary()
-    })
+  onChange() {
+    this.setState(this.getOwnState());
+  }
+  getOwnState() {
+    const state = store.getState();
+    let sum = 0;
+    for (const key in state) {
+      if (state.hasOwnProperty(key)) {
+        sum += state[key];
+      }
+    }
+    return { sum: sum };
   }
 
   render() {
+    const sum = this.state.sum;
     return (
-      <div>Total Count: {this.state.sum}</div>
+      <div>Total Count: {sum}</div>
     );
   }
 }

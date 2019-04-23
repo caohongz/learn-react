@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import * as Actions from '../Actions.js';
-import CounterStore from '../stores/CounterStore.js';
+import store from '../Store.js';
 import PropTypes from 'prop-types';
 
 const buttonStyle = {
@@ -11,16 +11,20 @@ const buttonStyle = {
 class Counter extends Component {
 
   constructor(props) {
-    console.log('enter constructor: ' + props.caption);
     super(props);
     this.onChange = this.onChange.bind(this);
     this.onClickIncrementButton = this.onClickIncrementButton.bind(this);
     this.onClickDecrementButton = this.onClickDecrementButton.bind(this);
+    this.getOwnState = this.getOwnState.bind(this);
 
-    this.state = {
-      count: CounterStore.getCounterValues()[props.caption]
+    this.state = this.getOwnState();
     }
-  }
+    getOwnState() {
+      return {
+        value: store.getState()[this.props.caption]
+      };
+    }
+  
 
   /*
   getInitialState() {
@@ -40,39 +44,38 @@ class Counter extends Component {
   }
 
   componentDidMount() {
-    CounterStore.addChangeListener(this.onChange);
+    store.subscribe(this.onChange);
   }
 
   componentWillUnmount() {
-    CounterStore.removeChangeListener(this.onChange)
+    store.unsubscribe(this.onChange);
   }
 
   onClickIncrementButton() {
-    Actions.increment(this.props.caption);
+    store.dispatch(Actions.increment(this.props.caption));
   }
 
   onClickDecrementButton() {
-    Actions.decrement(this.props.caption);
+    store.dispatch(Actions.decrement(this.props.caption));
   }
 
   onChange() {
-    const newCount = CounterStore.getCounterValues()[this.props.caption];
-    this.setState({count: newCount});
+    this.setState(this.getOwnState());
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     return (nextProps.caption !== this.props.caption) ||
-           (nextState.count !== this.state.count);
+           (nextState.value !== this.state.value);
   }
 
   render() {
-    console.log('enter render ' + this.props.caption);
+    const value = this.state.value;
     const {caption} = this.props;
     return (
       <div>
         <button style={buttonStyle} onClick={this.onClickIncrementButton}>+</button>
         <button style={buttonStyle} onClick={this.onClickDecrementButton}>-</button>
-        <span>{caption} count: {this.state.count}</span>
+        <span>{caption} count: {value}</span>
       </div>
     );
   }
